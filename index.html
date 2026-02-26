@@ -2,6 +2,280 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>i-Tutor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: black;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header .logo {
+            color: deepskyblue;
+            font-size: 2em;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        input, select, button, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #333;
+        }
+
+        .hero {
+            background-color: black;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .hero .btn {
+            background-color: white;
+            color: black;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+
+        .dashboard {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: black;
+            color: white;
+            margin-top: 50px;
+        }
+
+        #content-list div {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <h1 class="logo">i-TUTOR</h1>
+    </div>
+</header>
+
+<section class="hero">
+    <div>
+        <h2>Welcome to E-Tutoring</h2>
+        <p>Learn from the best, online. Join today!</p>
+        <a href="#" class="btn" onclick="showLoginPage()">Get Started</a>
+    </div>
+</section>
+
+<!-- LOGIN PAGE -->
+<section id="login-page" style="display: none;">
+    <div class="container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <input type="email" id="email" placeholder="Enter your email" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+
+            <label>Select Role:</label>
+            <select id="role" required>
+                <option value="student">Student</option>
+                <option value="tutor">Tutor</option>
+            </select>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</section>
+
+<!-- STUDENT DASHBOARD -->
+<section id="student-dashboard" style="display: none;">
+    <div class="container dashboard">
+        <h2>Welcome, Student!</h2>
+        <p>View available content below.</p>
+        <div id="content-list"></div>
+    </div>
+</section>
+
+<!-- TUTOR DASHBOARD -->
+<section id="tutor-dashboard" style="display: none;">
+    <div class="container dashboard">
+        <h2>Welcome, Tutor!</h2>
+        <p>Upload content for students.</p>
+
+        <form id="upload-form">
+            <textarea id="content-title" placeholder="Content Title" required></textarea>
+            <input type="file" id="content-file" required>
+            <button type="submit">Upload Content</button>
+        </form>
+
+        <div id="content-list"></div>
+    </div>
+</section>
+
+<footer>
+    <p>&copy; 2026 CAT-Tutoring Platform</p>
+</footer>
+
+<script>
+
+function showLoginPage() {
+    document.querySelector('.hero').style.display = 'none';
+    document.getElementById('login-page').style.display = 'block';
+}
+
+/* ===============================
+   LOGIN SYSTEM WITH 20 PASSWORDS
+=================================*/
+document.getElementById('login-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const role = document.getElementById('role').value;
+
+    const studentPasswords = [
+        "student1","student2","student3","student4","student5",
+        "student6","student7","student8","student9","student10",
+        "student11","student12","student13","student14","student15",
+        "student16","student17","student18","student19","student20"
+    ];
+
+    const tutorPassword = "tutor123";
+
+    if (role === "student" && studentPasswords.includes(password)) {
+
+        alert("Student login successful!");
+        document.getElementById('login-page').style.display = "none";
+        document.getElementById('student-dashboard').style.display = "block";
+        displayContentForStudents();
+
+    } else if (role === "tutor" && password === tutorPassword) {
+
+        alert("Tutor login successful!");
+        document.getElementById('login-page').style.display = "none";
+        document.getElementById('tutor-dashboard').style.display = "block";
+        displayContentForTutors();
+
+    } else {
+        alert("Invalid email or password");
+    }
+});
+
+/* ===============================
+   TUTOR UPLOAD SYSTEM
+=================================*/
+document.getElementById('upload-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const title = document.getElementById('content-title').value;
+    const file = document.getElementById('content-file').files[0];
+
+    if (title && file) {
+
+        const content = {
+            title: title,
+            fileName: file.name,
+            fileURL: URL.createObjectURL(file)
+        };
+
+        let uploadedContent = JSON.parse(localStorage.getItem('uploadedContent')) || [];
+        uploadedContent.push(content);
+        localStorage.setItem('uploadedContent', JSON.stringify(uploadedContent));
+
+        alert("Content uploaded successfully!");
+        displayContentForTutors();
+    }
+});
+
+/* ===============================
+   DISPLAY FUNCTIONS
+=================================*/
+function displayContentForStudents() {
+    const contentList = JSON.parse(localStorage.getItem('uploadedContent')) || [];
+    const container = document.getElementById('content-list');
+    container.innerHTML = "";
+
+    contentList.forEach(content => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <h3>${content.title}</h3>
+            <a href="${content.fileURL}" target="_blank">View Content</a>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function displayContentForTutors() {
+    const contentList = JSON.parse(localStorage.getItem('uploadedContent')) || [];
+    const container = document.getElementById('content-list');
+    container.innerHTML = "";
+
+    contentList.forEach(content => {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <h3>${content.title}</h3>
+            <p>File: ${content.fileName}</p>
+        `;
+        container.appendChild(div);
+    });
+}
+
+</script>
+
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>i-Tutor</title>
     <style>
